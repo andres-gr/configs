@@ -1,5 +1,7 @@
 # zmodload zsh/zprof
 
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 setopt nobeep
 
 #Dracula theme colors
@@ -48,6 +50,9 @@ source $ZSH_FILES/functions.zsh
 # pnpm
 export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
+
+# brew opt
+export PATH="/opt/homebrew/bin:$PATH"
 
 # brew curl
 export PATH="/usr/local/opt/curl/bin:$PATH"
