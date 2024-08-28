@@ -14,7 +14,7 @@ H.config = function ()
   local status = require 'agr.astro.status'
   local vimode = require 'agr.lazy.plugins.heir_line.vimode'.setup()
   local diagnostics = require 'agr.lazy.plugins.heir_line.diagnostics'.setup()
-  local components = require 'heirline-components.all'
+  local lib = require 'heirline-components.all'
 
   local setup_colors = function ()
     local Normal = utils.get_hlgroup('Normal', { fg = C.fg, bg = C.bg })
@@ -127,11 +127,9 @@ H.config = function ()
       status.component.cmd_info(),
       status.component.ai(),
       status.component.fill(),
-      -- status.component.lsp(),
-      components.component.lsp(),
+      lib.component.lsp(),
       status.component.treesitter(),
-      -- status.component.nav(),
-      components.component.nav(),
+      lib.component.nav(),
       status.component.mode { surround = { separator = 'right' } },
     },
   }
@@ -139,18 +137,8 @@ H.config = function ()
   local winbar = {
     init = function (self) self.bufnr = vim.api.nvim_get_current_buf() end,
     fallthrough = false,
-    {
-      condition = function () return not status.condition.is_active() end,
-      status.component.file_info {
-        file_icon = { hl = status.hl.file_icon 'winbar', padding = { left = 0 } },
-        file_modified = false,
-        file_read_only = false,
-        hl = status.hl.get_attributes('winbarnc', true),
-        surround = false,
-        update = 'BufEnter',
-      },
-    },
-    status.component.breadcrumbs { hl = status.hl.get_attributes('winbar', true) }
+    lib.component.winbar_when_inactive(),
+    lib.component.breadcrumbs(),
   }
 
   local opts = {
@@ -168,6 +156,7 @@ H.config = function ()
           'alpha',
           'dashboard',
           'neo%-tree',
+          'no-neck-pain',
           'NvimTree',
           'Outline',
         },
@@ -175,9 +164,9 @@ H.config = function ()
     end,
   }
 
-  components.init.subscribe_to_events()
+  lib.init.subscribe_to_events()
 
-  local heir_colors = components.hl.get_colors() or setup_colors()
+  local heir_colors = lib.hl.get_colors() or setup_colors()
 
   heirline.load_colors(heir_colors)
 
@@ -190,7 +179,7 @@ H.config = function ()
   local augroup = vim.api.nvim_create_augroup('Heirline', { clear = true })
   vim.api.nvim_create_autocmd('User', {
     callback = function ()
-      require 'heirline.utils'.on_colorscheme(setup_colors())
+      require 'heirline.utils'.on_colorscheme(heir_colors)
     end,
     desc = 'Refresh heirline colors',
     group = augroup,
